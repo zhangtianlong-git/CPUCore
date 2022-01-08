@@ -4,13 +4,13 @@
 ---
 
 ## 流程记录
-![1](./figures/0.png)<br>
+![1](./figures/0.PNG)<br>
 
 ---
-![2](./figures/1.png)<br>
+![2](./figures/1.PNG)<br>
 
 ---
-![3](./figures/2.png)<br>
+![3](./figures/2.PNG)<br>
 
 ---
-![4](./figures/3.png)<br>
+![4](./figures/3.PNG)<br>
