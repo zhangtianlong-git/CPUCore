@@ -90,7 +90,7 @@ ADDR1 = 1 << 6
 
 ADDR2_SHIFT = 4
 ADDR1_SHIFT = 2
- 
+
 AM_INS = 0
 AM_REG = 1
 AM_DIR = 2
