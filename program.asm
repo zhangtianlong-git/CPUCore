@@ -1,5 +1,15 @@
-mov a,1
-mov b,2
-mov c,3
-mov d,4
+mov d,6
+inc d
+inc d
+inc d
+inc d
+inc d
+inc d
+dec d
+dec d
+dec d
+dec d
+dec d
+dec d
+dec d
 hlt

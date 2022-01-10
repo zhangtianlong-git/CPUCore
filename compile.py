@@ -14,20 +14,23 @@ codes = []
 
 OP2 = {
     'MOV': ASM.MOV,
+    'ADD': ASM.ADD,
+    'SUB': ASM.SUB
 }
 
 OP1 = {
-
+    'INC': ASM.INC,
+    'DEC': ASM.DEC,
 }
 
 OP0 = {
     'NOP': ASM.NOP,
-    'HLT': ASM.HLT
+    'HLT': ASM.HLT,
 }
 
 OP2SET = set(OP2.values())
-OP1SET = set(OP2.values())
-OP0SET = set(OP2.values())
+OP1SET = set(OP1.values())
+OP0SET = set(OP0.values())
 REGISTERS = {
     "A": pin.A,
     "B": pin.B,
@@ -56,13 +59,26 @@ class Code():
 
     def get_am(self, addr):
         if not addr:
-            return 0, 0
+            return None, None
         if addr in REGISTERS:
             return pin.AM_REG, REGISTERS[addr]
         if re.match(r'^[0-9]+$', addr):
             return pin.AM_INS, int(addr)
         if re.match(r'^0X[0-9A-F]+$', addr):
             return pin.AM_INS, int(addr, 16)
+
+        match = re.match(r'\[([0-9]+)\]$', addr)
+        if match:
+            return pin.AM_DIR, int(match.group(1))
+
+        match = re.match(r'\[(0X[0-9A-F]+)\]$', addr)
+        if match:
+            return pin.AM_DIR, int(match.group(1), 16)
+
+        match = re.match(r'\[(.+)\]$', addr)
+        if match and match.group(1) in REGISTERS:
+            return pin.AM_RAM, REGISTERS[match.group(1)]
+
         raise SyntaxError(self)
 
     def prepare_source(self):
@@ -85,6 +101,18 @@ class Code():
         amd, dst = self.get_am(self.dst)
         ams, src = self.get_am(self.src)
 
+        if src and (amd, ams) not in ASM.INSTRUCTIONS[2][op]:
+            raise SyntaxError(self)
+        if src is None and dst and amd not in ASM.INSTRUCTIONS[1][op]:
+            raise SyntaxError(self)
+        if src is None and dst is None and op not in ASM.INSTRUCTIONS[0]:
+            raise SyntaxError(self)
+
+        amd = amd or 0
+        ams = ams or 0
+        dst = dst or 0
+        src = src or 0
+
         if op in OP2SET:
             ir = op | (amd << 2) | ams
         elif op in OP1SET:
@@ -101,7 +129,7 @@ class Code():
 class SyntaxError(Exception):
     def __init__(self, code=Code, *args: object):
         super().__init__(*args)
-        self.code = Code
+        self.code = code
 
 
 def compile_program():
